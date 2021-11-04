@@ -1,0 +1,31 @@
+{
+  "name": "colyseus-demo",
+  "version": "1.0.0",
+  "description": "colyseus 测试",
+  "main": "index.js",
+  "scripts": {
+    "start": "esbuild --bundle client/src/index.ts --outfile=client/www/index.js --servedir=client/www",
+    "serve": "node build/server.js & npm run serverWatch",
+    "serverWatch": "nodemon server/www/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liurongqing/colyseus-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/liurongqing/colyseus-demo/issues"
+  },
+  "homepage": "https://github.com/liurongqing/colyseus-demo#readme",
+  "devDependencies": {
+    "esbuild": "^0.13.12",
+    "nodemon": "^2.0.14"
+  },
+  "dependencies": {
+    "colyseus": "^0.14.23",
+    "colyseus.js": "^0.14.13",
+    "express": "^4.17.1"
+  }
+}
