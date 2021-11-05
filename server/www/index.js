@@ -26379,7 +26379,7 @@ var require_Room = __commonJS({
       RoomInternalState[RoomInternalState["CREATED"] = 1] = "CREATED";
       RoomInternalState[RoomInternalState["DISCONNECTING"] = 2] = "DISCONNECTING";
     })(exports2.RoomInternalState || (exports2.RoomInternalState = {}));
-    var Room2 = class {
+    var Room = class {
       get locked() {
         return this._locked;
       }
@@ -26818,7 +26818,7 @@ var require_Room = __commonJS({
       }
     };
     exports2.DEFAULT_SEAT_RESERVATION_TIME = DEFAULT_SEAT_RESERVATION_TIME;
-    exports2.Room = Room2;
+    exports2.Room = Room;
   }
 });
 
@@ -27196,7 +27196,7 @@ var require_MatchMaker = __commonJS({
     var IPC = require_IPC();
     var Utils = require_Utils();
     var RegisteredHandler = require_RegisteredHandler();
-    var Room2 = require_Room();
+    var Room = require_Room();
     var LocalPresence = require_LocalPresence();
     var Debug = require_Debug();
     var SeatReservationError = require_SeatReservationError();
@@ -27349,7 +27349,7 @@ var require_MatchMaker = __commonJS({
           throw new ServerError.ServerError(e.code || Protocol.ErrorCode.MATCHMAKE_UNHANDLED, e.message);
         }
       }
-      room.internalState = Room2.RoomInternalState.CREATED;
+      room.internalState = Room.RoomInternalState.CREATED;
       room.listing.roomId = room.roomId;
       room.listing.maxClients = room.maxClients;
       Debug.debugMatchMaking("spawning '%s', roomId: %s, processId: %s", roomName, room.roomId, exports2.processId);
@@ -27462,7 +27462,7 @@ var require_MatchMaker = __commonJS({
       if (!isGracefullyShuttingDown) {
         exports2.presence.hincrby(getRoomCountKey(), exports2.processId, -1);
       }
-      if (room.internalState !== Room2.RoomInternalState.DISCONNECTING) {
+      if (room.internalState !== Room.RoomInternalState.DISCONNECTING) {
         await room.listing.remove();
       }
       handlers[roomName].emit("dispose", room);
@@ -27540,7 +27540,7 @@ var require_RelayRoom = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var schema = require_cjs();
-    var Room2 = require_Room();
+    var Room = require_Room();
     var context = new schema.Context();
     var Player = class extends schema.Schema {
       connected;
@@ -27558,7 +27558,7 @@ var require_RelayRoom = __commonJS({
     schema.defineTypes(State, {
       players: { map: Player }
     }, context);
-    var RelayRoom = class extends Room2.Room {
+    var RelayRoom = class extends Room.Room {
       allowReconnectionTime = 0;
       onCreate(options) {
         this.setState(new State());
@@ -27611,7 +27611,7 @@ var require_Server = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     var Debug = require_Debug();
     var MatchMaker = require_MatchMaker();
-    var Room2 = require_Room();
+    var Room = require_Room();
     var Utils = require_Utils();
     require_lib3();
     var index$1 = require_discovery();
@@ -27711,8 +27711,8 @@ var require_Server = __commonJS({
         console.warn(`\u{1F4F6}\uFE0F\u2757 Colyseus latency simulation enabled \u2192 ${milliseconds}ms latency for round trip.`);
         const halfwayMS = milliseconds / 2;
         this.transport.simulateLatency(halfwayMS);
-        const _onMessage = Room2.Room.prototype["_onMessage"];
-        Room2.Room.prototype["_onMessage"] = function(client, buffer) {
+        const _onMessage = Room.Room.prototype["_onMessage"];
+        Room.Room.prototype["_onMessage"] = function(client, buffer) {
           const cachedBuffer = Buffer.from(buffer);
           setTimeout(() => _onMessage.call(this, client, cachedBuffer), halfwayMS);
         };
@@ -27788,8 +27788,8 @@ var require_LobbyRoom = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     var MatchMaker = require_MatchMaker();
     var Lobby = require_Lobby();
-    var Room2 = require_Room();
-    var LobbyRoom = class extends Room2.Room {
+    var Room = require_Room();
+    var LobbyRoom = class extends Room.Room {
       rooms = [];
       unsubscribeLobby;
       clientOptions = {};
@@ -27880,7 +27880,7 @@ var require_build = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     var Clock = require_lib3();
     var Server2 = require_Server();
-    var Room2 = require_Room();
+    var Room = require_Room();
     var Protocol = require_Protocol();
     var RegisteredHandler = require_RegisteredHandler();
     var ServerError = require_ServerError();
@@ -27911,11 +27911,11 @@ var require_build = __commonJS({
       }
     });
     exports2.Server = Server2.Server;
-    exports2.Room = Room2.Room;
+    exports2.Room = Room.Room;
     Object.defineProperty(exports2, "RoomInternalState", {
       enumerable: true,
       get: function() {
-        return Room2.RoomInternalState;
+        return Room.RoomInternalState;
       }
     });
     Object.defineProperty(exports2, "ErrorCode", {
@@ -34178,14 +34178,14 @@ var require_individualCommands = __commonJS({
       this.queue.push(new Command("select", [db], select_callback(this._client, db, callback)));
       return this;
     };
-    RedisClient.prototype.monitor = RedisClient.prototype.MONITOR = function monitor(callback) {
+    RedisClient.prototype.monitor = RedisClient.prototype.MONITOR = function monitor2(callback) {
       var self2 = this;
       var call_on_write = function() {
         self2.monitoring = true;
       };
       return this.internal_send_command(new Command("monitor", [], callback, call_on_write));
     };
-    Multi.prototype.monitor = Multi.prototype.MONITOR = function monitor(callback) {
+    Multi.prototype.monitor = Multi.prototype.MONITOR = function monitor2(callback) {
       if (this.exec !== this.exec_transaction) {
         var self2 = this;
         var call_on_write = function() {
@@ -39497,7 +39497,7 @@ var require_package = __commonJS({
       _from: "mongodb@3.7.3",
       _id: "mongodb@3.7.3",
       _inBundle: false,
-      _integrity: "sha1-t5Sc/QrcTMfTLT8gNCFNRHXxdaU=",
+      _integrity: "sha512-Psm+g3/wHXhjBEktkxXsFMZvd3nemI0r3IPsE0bU+4//PnvNWKkzhZcEsbPcYiWqe8XqXJJEg4Tgtr7Raw67Yw==",
       _location: "/mongodb",
       _phantomChildren: {
         "require-at": "1.0.6"
@@ -39515,10 +39515,10 @@ var require_package = __commonJS({
       _requiredBy: [
         "/mongoose"
       ],
-      _resolved: "https://mirrors.xsyxxd.com/repository/npm-group/mongodb/-/mongodb-3.7.3.tgz",
+      _resolved: "https://registry.npmjs.org/mongodb/-/mongodb-3.7.3.tgz",
       _shasum: "b7949cfd0adc4cc7d32d3f2034214d4475f175a5",
       _spec: "mongodb@3.7.3",
-      _where: "/Users/rongqingliu/github/colyseus-demo/node_modules/mongoose",
+      _where: "/Users/liurongqing/github/colyseus-demo/node_modules/mongoose",
       author: {
         name: "The MongoDB NodeJS Team",
         email: "dbx-node@mongodb.com"
@@ -53926,8 +53926,8 @@ var require_monitor = __commonJS({
       [STATE_MONITORING]: [STATE_MONITORING, STATE_IDLE, STATE_CLOSING]
     });
     var INVALID_REQUEST_CHECK_STATES = new Set([STATE_CLOSING, STATE_CLOSED, STATE_MONITORING]);
-    function isInCloseState(monitor) {
-      return monitor.s.state === STATE_CLOSED || monitor.s.state === STATE_CLOSING;
+    function isInCloseState(monitor2) {
+      return monitor2.s.state === STATE_CLOSED || monitor2.s.state === STATE_CLOSING;
     }
     var Monitor = class extends EventEmitter {
       constructor(server2, options) {
@@ -54007,44 +54007,44 @@ var require_monitor = __commonJS({
         stateTransition(this, STATE_CLOSED);
       }
     };
-    function resetMonitorState(monitor) {
-      if (monitor[kMonitorId]) {
-        monitor[kMonitorId].stop();
-        monitor[kMonitorId] = null;
+    function resetMonitorState(monitor2) {
+      if (monitor2[kMonitorId]) {
+        monitor2[kMonitorId].stop();
+        monitor2[kMonitorId] = null;
       }
-      if (monitor[kRTTPinger]) {
-        monitor[kRTTPinger].close();
-        monitor[kRTTPinger] = void 0;
+      if (monitor2[kRTTPinger]) {
+        monitor2[kRTTPinger].close();
+        monitor2[kRTTPinger] = void 0;
       }
-      monitor[kCancellationToken].emit("cancel");
-      if (monitor[kMonitorId]) {
-        clearTimeout(monitor[kMonitorId]);
-        monitor[kMonitorId] = void 0;
+      monitor2[kCancellationToken].emit("cancel");
+      if (monitor2[kMonitorId]) {
+        clearTimeout(monitor2[kMonitorId]);
+        monitor2[kMonitorId] = void 0;
       }
-      if (monitor[kConnection]) {
-        monitor[kConnection].destroy({ force: true });
+      if (monitor2[kConnection]) {
+        monitor2[kConnection].destroy({ force: true });
       }
     }
-    function checkServer(monitor, callback) {
+    function checkServer(monitor2, callback) {
       let start = now();
-      monitor.emit("serverHeartbeatStarted", new ServerHeartbeatStartedEvent(monitor.address));
+      monitor2.emit("serverHeartbeatStarted", new ServerHeartbeatStartedEvent(monitor2.address));
       function failureHandler(err) {
-        if (monitor[kConnection]) {
-          monitor[kConnection].destroy({ force: true });
-          monitor[kConnection] = void 0;
+        if (monitor2[kConnection]) {
+          monitor2[kConnection].destroy({ force: true });
+          monitor2[kConnection] = void 0;
         }
-        monitor.emit("serverHeartbeatFailed", new ServerHeartbeatFailedEvent(calculateDurationInMs(start), err, monitor.address));
-        monitor.emit("resetServer", err);
-        monitor.emit("resetConnectionPool");
+        monitor2.emit("serverHeartbeatFailed", new ServerHeartbeatFailedEvent(calculateDurationInMs(start), err, monitor2.address));
+        monitor2.emit("resetServer", err);
+        monitor2.emit("resetConnectionPool");
         callback(err);
       }
-      if (monitor[kConnection] != null && !monitor[kConnection].closed) {
-        const connectTimeoutMS = monitor.options.connectTimeoutMS;
-        const maxAwaitTimeMS = monitor.options.heartbeatFrequencyMS;
-        const topologyVersion = monitor[kServer].description.topologyVersion;
+      if (monitor2[kConnection] != null && !monitor2[kConnection].closed) {
+        const connectTimeoutMS = monitor2.options.connectTimeoutMS;
+        const maxAwaitTimeMS = monitor2.options.heartbeatFrequencyMS;
+        const topologyVersion = monitor2[kServer].description.topologyVersion;
         const isAwaitable = topologyVersion != null;
-        const serverApi = monitor[kConnection].serverApi;
-        const helloOk = monitor[kConnection].helloOk;
+        const serverApi = monitor2[kConnection].serverApi;
+        const helloOk = monitor2[kConnection].helloOk;
         const cmd = {
           [serverApi || helloOk ? "hello" : "ismaster"]: true
         };
@@ -54058,74 +54058,74 @@ var require_monitor = __commonJS({
             options.socketTimeout = connectTimeoutMS + maxAwaitTimeMS;
           }
           options.exhaustAllowed = true;
-          if (monitor[kRTTPinger] == null) {
-            monitor[kRTTPinger] = new RTTPinger(monitor[kCancellationToken], monitor.connectOptions);
+          if (monitor2[kRTTPinger] == null) {
+            monitor2[kRTTPinger] = new RTTPinger(monitor2[kCancellationToken], monitor2.connectOptions);
           }
         }
-        monitor[kConnection].command("admin.$cmd", cmd, options, (err, result) => {
+        monitor2[kConnection].command("admin.$cmd", cmd, options, (err, result) => {
           if (err) {
             failureHandler(err);
             return;
           }
           const isMaster = result.result;
-          const rttPinger = monitor[kRTTPinger];
+          const rttPinger = monitor2[kRTTPinger];
           if ("isWritablePrimary" in isMaster) {
             isMaster.ismaster = isMaster.isWritablePrimary;
           }
           const duration = isAwaitable && rttPinger ? rttPinger.roundTripTime : calculateDurationInMs(start);
-          monitor.emit("serverHeartbeatSucceeded", new ServerHeartbeatSucceededEvent(duration, isMaster, monitor.address));
+          monitor2.emit("serverHeartbeatSucceeded", new ServerHeartbeatSucceededEvent(duration, isMaster, monitor2.address));
           if (isAwaitable && isMaster.topologyVersion) {
-            monitor.emit("serverHeartbeatStarted", new ServerHeartbeatStartedEvent(monitor.address));
+            monitor2.emit("serverHeartbeatStarted", new ServerHeartbeatStartedEvent(monitor2.address));
             start = now();
           } else {
-            if (monitor[kRTTPinger]) {
-              monitor[kRTTPinger].close();
-              monitor[kRTTPinger] = void 0;
+            if (monitor2[kRTTPinger]) {
+              monitor2[kRTTPinger].close();
+              monitor2[kRTTPinger] = void 0;
             }
             callback(void 0, isMaster);
           }
         });
         return;
       }
-      connect(monitor.connectOptions, monitor[kCancellationToken], (err, conn) => {
-        if (conn && isInCloseState(monitor)) {
+      connect(monitor2.connectOptions, monitor2[kCancellationToken], (err, conn) => {
+        if (conn && isInCloseState(monitor2)) {
           conn.destroy({ force: true });
           return;
         }
         if (err) {
-          monitor[kConnection] = void 0;
+          monitor2[kConnection] = void 0;
           if (!(err instanceof MongoNetworkError)) {
-            monitor.emit("resetConnectionPool");
+            monitor2.emit("resetConnectionPool");
           }
           failureHandler(err);
           return;
         }
-        monitor[kConnection] = conn;
-        monitor.emit("serverHeartbeatSucceeded", new ServerHeartbeatSucceededEvent(calculateDurationInMs(start), conn.ismaster, monitor.address));
+        monitor2[kConnection] = conn;
+        monitor2.emit("serverHeartbeatSucceeded", new ServerHeartbeatSucceededEvent(calculateDurationInMs(start), conn.ismaster, monitor2.address));
         callback(void 0, conn.ismaster);
       });
     }
-    function monitorServer(monitor) {
+    function monitorServer(monitor2) {
       return (callback) => {
-        stateTransition(monitor, STATE_MONITORING);
+        stateTransition(monitor2, STATE_MONITORING);
         function done() {
-          if (!isInCloseState(monitor)) {
-            stateTransition(monitor, STATE_IDLE);
+          if (!isInCloseState(monitor2)) {
+            stateTransition(monitor2, STATE_IDLE);
           }
           callback();
         }
-        process.nextTick(() => monitor.emit("monitoring", monitor[kServer]));
-        checkServer(monitor, (err, isMaster) => {
+        process.nextTick(() => monitor2.emit("monitoring", monitor2[kServer]));
+        checkServer(monitor2, (err, isMaster) => {
           if (err) {
-            if (monitor[kServer].description.type === ServerType.Unknown) {
-              monitor.emit("resetServer", err);
+            if (monitor2[kServer].description.type === ServerType.Unknown) {
+              monitor2.emit("resetServer", err);
               return done();
             }
           }
           if (isMaster && isMaster.topologyVersion) {
             setTimeout(() => {
-              if (!isInCloseState(monitor)) {
-                monitor[kMonitorId].wake();
+              if (!isInCloseState(monitor2)) {
+                monitor2[kMonitorId].wake();
               }
             });
           }
@@ -87353,7 +87353,7 @@ var require_package2 = __commonJS({
       _from: "mongoose@^5.11.3",
       _id: "mongoose@5.13.13",
       _inBundle: false,
-      _integrity: "sha1-QgWTexZPIBhupwSh7y0Ewc6e4J4=",
+      _integrity: "sha512-M55tpCr/p5i6vdJ54nm4MG6/7SKV4JqlWnqbx6yCRuAuW05CZ7u+gNuHVPQVF9dZ59ALXjOtPEUl+OXklAa7ng==",
       _location: "/mongoose",
       _phantomChildren: {},
       _requested: {
@@ -87369,10 +87369,10 @@ var require_package2 = __commonJS({
       _requiredBy: [
         "/@colyseus/mongoose-driver"
       ],
-      _resolved: "https://mirrors.xsyxxd.com/repository/npm-group/mongoose/-/mongoose-5.13.13.tgz",
+      _resolved: "https://registry.npmjs.org/mongoose/-/mongoose-5.13.13.tgz",
       _shasum: "4205937b164f20186ea704a1ef2d04c1ce9ee09e",
       _spec: "mongoose@^5.11.3",
-      _where: "/Users/rongqingliu/github/colyseus-demo/node_modules/@colyseus/mongoose-driver",
+      _where: "/Users/liurongqing/github/colyseus-demo/node_modules/@colyseus/mongoose-driver",
       author: {
         name: "Guillermo Rauch",
         email: "guillermo@learnboost.com"
@@ -98391,38 +98391,1119 @@ var require_build5 = __commonJS({
   }
 });
 
+// node_modules/node-os-utils/lib/bucket.js
+var require_bucket = __commonJS({
+  "node_modules/node-os-utils/lib/bucket.js"(exports2, module2) {
+    module2.exports = {
+      options: {
+        NOT_SUPPORTED_VALUE: "not supported",
+        INTERVAL: 1e3
+      },
+      isNotSupported(res) {
+        return res === this.options.NOT_SUPPORTED_VALUE;
+      }
+    };
+  }
+});
+
+// node_modules/node-os-utils/lib/cpu.js
+var require_cpu = __commonJS({
+  "node_modules/node-os-utils/lib/cpu.js"() {
+    var bucket = require_bucket();
+    var os = require("os");
+    bucket.cpu = {
+      average: function() {
+        var totalIdle = 0;
+        var totalTick = 0;
+        var cpus = os.cpus();
+        for (var i = 0, len = cpus.length; i < len; i++) {
+          var cpu = cpus[i];
+          for (var type in cpu.times) {
+            totalTick += cpu.times[type];
+          }
+          totalIdle += cpu.times.idle;
+        }
+        return {
+          totalIdle,
+          totalTick,
+          avgIdle: totalIdle / cpus.length,
+          avgTotal: totalTick / cpus.length
+        };
+      },
+      usage: function(interval) {
+        var self2 = this;
+        if (!interval) {
+          interval = bucket.options.INTERVAL;
+        }
+        return new Promise(function(resolve) {
+          if (typeof interval !== "number") {
+            throw new TypeError("interval must be a number!");
+          }
+          var startMeasure = self2.average();
+          setTimeout(function() {
+            var endMeasure = self2.average();
+            var idleDifference = endMeasure.avgIdle - startMeasure.avgIdle;
+            var totalDifference = endMeasure.avgTotal - startMeasure.avgTotal;
+            var cpuPercentage = (1e4 - Math.round(1e4 * idleDifference / totalDifference)) / 100;
+            return resolve(cpuPercentage);
+          }, interval);
+        });
+      },
+      free: function(interval) {
+        var self2 = this;
+        if (!interval) {
+          interval = bucket.options.INTERVAL;
+        }
+        return new Promise(function(resolve) {
+          if (typeof interval !== "number") {
+            throw new TypeError("interval must be a number!");
+          }
+          self2.usage(interval).then(function(cpuPercentage) {
+            return resolve(100 - cpuPercentage);
+          });
+        });
+      },
+      count: function() {
+        return os.cpus().length;
+      },
+      model: function() {
+        return os.cpus()[0].model;
+      },
+      loadavg: function() {
+        return os.loadavg();
+      },
+      loadavgTime: function(time) {
+        time = parseInt(time, 10);
+        var loads = os.loadavg();
+        switch (time) {
+          case 5:
+            return loads[1];
+          case 15:
+            return loads[2];
+          default:
+            return loads[0];
+        }
+      }
+    };
+  }
+});
+
+// node_modules/node-os-utils/lib/exec.js
+var require_exec = __commonJS({
+  "node_modules/node-os-utils/lib/exec.js"(exports2, module2) {
+    var cp = require("child_process");
+    var bucket = require_bucket();
+    function exec(command) {
+      return new Promise(function(resolve) {
+        var runCommand = 'LC_ALL="en_US.UTF-8";LANG="en_US.UTF-8";LANGUAGE="en_US:en";' + command;
+        cp.exec(runCommand, { shell: true }, function(err, stdout, stderr) {
+          if (err || !stdout) {
+            return resolve(bucket.options.NOT_SUPPORTED_VALUE);
+          }
+          return resolve(stdout);
+        });
+      });
+    }
+    module2.exports = exec;
+    module2.exports.wrapExec = function(command) {
+      return function() {
+        return exec(command);
+      };
+    };
+  }
+});
+
+// node_modules/node-os-utils/lib/drive.js
+var require_drive = __commonJS({
+  "node_modules/node-os-utils/lib/drive.js"() {
+    var bucket = require_bucket();
+    var exec = require_exec();
+    var DISK_PATTERN = /^(\S+)\n?\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+?)\n/mg;
+    function createDiskInfo(headlineArgs, args2) {
+      var info = {};
+      headlineArgs.forEach(function(h, i) {
+        info[h] = args2[i];
+      });
+      return info;
+    }
+    function parseDfStdout(stdout) {
+      var dfInfo = [];
+      var headline;
+      stdout.replace(DISK_PATTERN, function() {
+        var args2 = Array.prototype.slice.call(arguments, 1, 7);
+        if (arguments[7] === 0) {
+          headline = args2;
+          return;
+        }
+        dfInfo.push(createDiskInfo(headline, args2));
+      });
+      return dfInfo;
+    }
+    bucket.drive = {
+      info: function(diskName) {
+        if (!diskName) {
+          diskName = "/";
+        }
+        return exec("df -kP").then(function(out) {
+          var diskInfo = null;
+          var main = null;
+          var lines = parseDfStdout(out);
+          for (var i = 0; i < lines.length; i++) {
+            if (lines[i]["Mounted on"] === diskName) {
+              diskInfo = lines[i];
+              continue;
+            }
+            if (lines[i]["Mounted on"] === "/") {
+              main = lines[i];
+              continue;
+            }
+          }
+          if (diskInfo === null) {
+            if (main === null) {
+              throw new Error("disk name invalid and / not found");
+            }
+            console.info("disk name invalid, using / as default");
+            diskInfo = main;
+          }
+          var used = Math.ceil(diskInfo.Used * 1024 / Math.pow(1024, 2));
+          var free = Math.ceil((diskInfo.Available || diskInfo.Avail) * 1024 / Math.pow(1024, 2));
+          var total = used + free;
+          var totalGb = (total / 1024).toFixed(1);
+          var usedGb = (used / 1024).toFixed(1);
+          var freeGb = (free / 1024).toFixed(1);
+          var usedPercentage = (100 * used / total).toFixed(1);
+          var freePercentage = (100 * free / total).toFixed(1);
+          return Promise.resolve({
+            totalGb,
+            usedGb,
+            freeGb,
+            usedPercentage,
+            freePercentage
+          });
+        });
+      },
+      free: function(diskName) {
+        var self2 = this;
+        return self2.info(diskName).then(function(res) {
+          return Promise.resolve({
+            totalGb: res.totalGb,
+            freeGb: res.freeGb,
+            freePercentage: res.freePercentage
+          });
+        });
+      },
+      used: function(diskName) {
+        var self2 = this;
+        return self2.info(diskName).then(function(res) {
+          return Promise.resolve({
+            totalGb: res.totalGb,
+            usedGb: res.usedGb,
+            usedPercentage: res.usedPercentage
+          });
+        });
+      }
+    };
+  }
+});
+
+// node_modules/node-os-utils/util/co.js
+var require_co = __commonJS({
+  "node_modules/node-os-utils/util/co.js"(exports2, module2) {
+    var slice = Array.prototype.slice;
+    module2.exports = co["default"] = co.co = co;
+    co.wrap = function(fn2) {
+      createPromise.__generatorFunction__ = fn2;
+      return createPromise;
+      function createPromise() {
+        return co.call(this, fn2.apply(this, arguments));
+      }
+    };
+    function co(gen) {
+      var ctx = this;
+      var args2 = slice.call(arguments, 1);
+      return new Promise(function(resolve, reject) {
+        if (typeof gen === "function")
+          gen = gen.apply(ctx, args2);
+        if (!gen || typeof gen.next !== "function")
+          return resolve(gen);
+        onFulfilled();
+        function onFulfilled(res) {
+          var ret2;
+          try {
+            ret2 = gen.next(res);
+          } catch (e) {
+            return reject(e);
+          }
+          next(ret2);
+        }
+        function onRejected(err) {
+          var ret2;
+          try {
+            ret2 = gen.throw(err);
+          } catch (e) {
+            return reject(e);
+          }
+          next(ret2);
+        }
+        function next(ret2) {
+          if (ret2.done)
+            return resolve(ret2.value);
+          var value2 = toPromise.call(ctx, ret2.value);
+          if (value2 && isPromise(value2))
+            return value2.then(onFulfilled, onRejected);
+          return onRejected(new TypeError('You may only yield a function, promise, generator, array, or object, but the following object was passed: "' + String(ret2.value) + '"'));
+        }
+      });
+    }
+    function toPromise(obj2) {
+      if (!obj2)
+        return obj2;
+      if (isPromise(obj2))
+        return obj2;
+      if (isGeneratorFunction(obj2) || isGenerator(obj2))
+        return co.call(this, obj2);
+      if (typeof obj2 === "function")
+        return thunkToPromise.call(this, obj2);
+      if (Array.isArray(obj2))
+        return arrayToPromise.call(this, obj2);
+      if (isObject2(obj2))
+        return objectToPromise.call(this, obj2);
+      return obj2;
+    }
+    function thunkToPromise(fn2) {
+      var ctx = this;
+      return new Promise(function(resolve, reject) {
+        fn2.call(ctx, function(err, res) {
+          if (err)
+            return reject(err);
+          if (arguments.length > 2)
+            res = slice.call(arguments, 1);
+          resolve(res);
+        });
+      });
+    }
+    function arrayToPromise(obj2) {
+      return Promise.all(obj2.map(toPromise, this));
+    }
+    function objectToPromise(obj2) {
+      var results = new obj2.constructor();
+      var keys = Object.keys(obj2);
+      var promises = [];
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var promise = toPromise.call(this, obj2[key]);
+        if (promise && isPromise(promise))
+          defer(promise, key);
+        else
+          results[key] = obj2[key];
+      }
+      return Promise.all(promises).then(function() {
+        return results;
+      });
+      function defer(promise2, key2) {
+        results[key2] = void 0;
+        promises.push(promise2.then(function(res) {
+          results[key2] = res;
+        }));
+      }
+    }
+    function isPromise(obj2) {
+      return typeof obj2.then === "function";
+    }
+    function isGenerator(obj2) {
+      return typeof obj2.next === "function" && typeof obj2.throw === "function";
+    }
+    function isGeneratorFunction(obj2) {
+      var constructor = obj2.constructor;
+      if (!constructor)
+        return false;
+      if (constructor.name === "GeneratorFunction" || constructor.displayName === "GeneratorFunction")
+        return true;
+      return isGenerator(constructor.prototype);
+    }
+    function isObject2(val) {
+      return Object === val.constructor;
+    }
+  }
+});
+
+// node_modules/node-os-utils/util/index.js
+var require_util3 = __commonJS({
+  "node_modules/node-os-utils/util/index.js"(exports2) {
+    exports2.isNumber = function(num) {
+      return num !== true && num !== false && Boolean(num === 0 || num && !isNaN(num));
+    };
+    require("util");
+  }
+});
+
+// node_modules/node-os-utils/lib/mem.js
+var require_mem = __commonJS({
+  "node_modules/node-os-utils/lib/mem.js"() {
+    var bucket = require_bucket();
+    var os = require("os");
+    var fs = require("fs");
+    var co = require_co();
+    var util = require_util3();
+    var exec = require_exec();
+    var linuxFreeMemory = function() {
+      return new Promise(function(resolve) {
+        fs.readFile("/proc/meminfo", "utf8", function(err, out) {
+          if (err) {
+            return resolve(bucket.options.NOT_SUPPORTED_VALUE);
+          }
+          var memInfo = {};
+          var usage = out.toString().trim().split("\n");
+          usage.forEach((line) => {
+            var pair = line.split(":");
+            memInfo[pair[0]] = parseInt(pair[1], 10);
+          });
+          var totalMem = parseInt(memInfo.MemTotal, 10) * 1024;
+          if (!memInfo.MemAvailable) {
+            memInfo.MemAvailable = memInfo["MemFree"] + memInfo["Buffers"] + memInfo["Cached"] + memInfo["SReclaimable"] - memInfo["Shmem"];
+          }
+          var freeMem = memInfo.MemAvailable * 1024;
+          if (os.release() < "3.14") {
+            freeMem = ((memInfo.MemFree || 0) + (memInfo.Buffers || 0) + (memInfo.Cached || 0)) * 1024;
+          }
+          return resolve({ totalMem, freeMem });
+        });
+      });
+    };
+    var osxFreeMemory = co.wrap(function* () {
+      var totalMem = os.totalmem();
+      var mappings = {
+        "Pages purgeable": "purgeable",
+        "Pages wired down": "wired",
+        "Pages active": "active",
+        "Pages inactive": "inactive",
+        "Pages occupied by compressor": "compressed"
+      };
+      var [vmStat, pagePageable] = yield Promise.all([
+        exec("vm_stat"),
+        exec("sysctl vm.page_pageable_internal_count")
+      ]);
+      vmStat = vmStat.toString().trim();
+      pagePageable = pagePageable.toString().trim();
+      var pageSize = 4096;
+      var matchdPageSize = /page size of (\d+) bytes/.exec(vmStat);
+      if (matchdPageSize && util.isNumber(matchdPageSize[1])) {
+        pageSize = Number(matchdPageSize[1]);
+      }
+      var [, pageableValue] = pagePageable.split(":");
+      if (!util.isNumber(pageableValue)) {
+        return {
+          totalMem,
+          freeMem: os.freemem()
+        };
+      }
+      pageableValue = Number(pageableValue) * pageSize;
+      var lines = vmStat.split("\n").filter((x) => x !== "");
+      var stats = {};
+      lines.forEach((x) => {
+        var parts = x.split(":");
+        var key = parts[0];
+        var val = parts[1].replace(".", "").trim();
+        if (mappings[key]) {
+          var ky = mappings[key];
+          stats[ky] = val * pageSize;
+        }
+      });
+      var appMemory = pageableValue - stats.purgeable;
+      var wiredMemory = stats.wired;
+      var compressedMemory = stats.compressed;
+      var used = appMemory + wiredMemory + compressedMemory;
+      return {
+        totalMem,
+        freeMem: totalMem - used
+      };
+    });
+    bucket.mem = {
+      info: co.wrap(function* () {
+        var totalMem = null;
+        var freeMem = null;
+        var memInfo = yield linuxFreeMemory();
+        if (bucket.isNotSupported(memInfo)) {
+          totalMem = os.totalmem();
+          freeMem = os.freemem();
+          if (os.platform() === "darwin") {
+            var mem = yield osxFreeMemory();
+            totalMem = mem.totalMem;
+            freeMem = mem.freeMem;
+          }
+        } else {
+          totalMem = memInfo.totalMem;
+          freeMem = memInfo.freeMem;
+        }
+        var totalMemMb = parseFloat((totalMem / 1024 / 1024).toFixed(2));
+        var usedMemMb = parseFloat(((totalMem - freeMem) / 1024 / 1024).toFixed(2));
+        var freeMemMb = parseFloat((totalMemMb - usedMemMb).toFixed(2));
+        var usedMemPercentage = parseFloat((100 * ((totalMem - freeMem) / totalMem)).toFixed(2));
+        var freeMemPercentage = parseFloat((100 * (freeMem / totalMem)).toFixed(2));
+        return {
+          totalMemMb,
+          usedMemMb,
+          freeMemMb,
+          usedMemPercentage,
+          freeMemPercentage
+        };
+      }),
+      free: function() {
+        var self2 = this;
+        return self2.info().then(function(res) {
+          return Promise.resolve({
+            totalMemMb: res.totalMemMb,
+            freeMemMb: res.freeMemMb
+          });
+        });
+      },
+      used: function() {
+        var self2 = this;
+        return self2.info().then(function(res) {
+          return Promise.resolve({
+            totalMemMb: res.totalMemMb,
+            usedMemMb: res.usedMemMb
+          });
+        });
+      },
+      totalMem: function() {
+        return os.totalmem();
+      }
+    };
+  }
+});
+
+// node_modules/node-os-utils/lib/netstat.js
+var require_netstat = __commonJS({
+  "node_modules/node-os-utils/lib/netstat.js"() {
+    var bucket = require_bucket();
+    var co = require_co();
+    var exec = require_exec();
+    var ifconfig = {
+      breakIntoBlocks: function breakIntoBlocks(fullText) {
+        var blocks = [];
+        var lines = fullText.split("\n");
+        var currentBlock = [];
+        lines.forEach(function(line) {
+          if (line.length > 0 && ["	", " "].indexOf(line[0]) === -1 && currentBlock.length > 0) {
+            blocks.push(currentBlock);
+            currentBlock = [];
+          }
+          if (line.trim()) {
+            currentBlock.push(line);
+          }
+        });
+        if (currentBlock.length > 0) {
+          blocks.push(currentBlock);
+        }
+        return blocks;
+      },
+      parseSingleBlock: function parseSingleBlock(block) {
+        var data = {};
+        block.forEach(function(line, i) {
+          var match = line.match(/^(\S+)\s+Link/);
+          if (i === 0) {
+            var match2 = line.match(/([a-zA-Z0-9]+):\s/);
+            if (match === null && match2) {
+              match = match2;
+            }
+          }
+          if (match) {
+            data.device = match[1];
+            var link = {};
+            match = line.match(/encap:(\S+)/);
+            if (match) {
+              link.encap = match[1];
+            }
+            match = line.match(/HWaddr\s+(\S+)/);
+            if (match) {
+              link.hwaddr = match[1];
+            }
+            data.link = link;
+          } else {
+            var section = data.other || {};
+            if (match = line.match(/collisions:(\S+)/)) {
+              section.collisions = parseInt(match[1]);
+            }
+            if (match = line.match(/txqueuelen:(\S+)/)) {
+              section.txqueuelen = parseInt(match[1]);
+            }
+            if (match = line.match(/RX bytes:(\S+)/)) {
+              section.rxBytes = parseInt(match[1]);
+            }
+            if (match = line.match(/RX packets (\S+) {2}bytes (\S+)/)) {
+              section.rxBytes = parseInt(match[2]);
+            }
+            if (match = line.match(/TX bytes:(\S+)/)) {
+              section.txBytes = parseInt(match[1]);
+            }
+            if (match = line.match(/TX packets (\S+) {2}bytes (\S+)/)) {
+              section.txBytes = parseInt(match[2]);
+            }
+            data.other = section;
+          }
+        });
+        return data;
+      }
+    };
+    function ifconfigStats() {
+      return co(function* () {
+        var res = yield exec("ifconfig");
+        if (bucket.isNotSupported(res))
+          return res;
+        var blocks = ifconfig.breakIntoBlocks(res);
+        var stats = [];
+        blocks.forEach(function(block, index) {
+          blocks[index] = ifconfig.parseSingleBlock(block);
+          stats[index] = {
+            "interface": blocks[index].device,
+            "inputBytes": blocks[index].other && blocks[index].other.rxBytes || 0,
+            "outputBytes": blocks[index].other && blocks[index].other.txBytes || 0
+          };
+        });
+        return stats;
+      });
+    }
+    bucket.netstat = {
+      stats: co.wrap(function* () {
+        var out = yield exec("ip -s link");
+        if (bucket.isNotSupported(out))
+          return ifconfigStats();
+        var names = new RegExp(/[0-9]+: ([\S]+): /g);
+        var RX = new RegExp(/ {4}RX: bytes {2}packets {2}errors {2}dropped overrun mcast\s*\n\s*([0-9]+) /gm);
+        var TX = new RegExp(/ {4}TX: bytes {2}packets {2}errors {2}dropped carrier collsns\s*\n\s*([0-9]+) /g);
+        var stats = [];
+        var i = 0;
+        var res = [];
+        while ((res = names.exec(out)) !== null) {
+          stats[i++] = {
+            interface: res[1]
+          };
+        }
+        i = 0;
+        while ((res = RX.exec(out)) !== null) {
+          stats[i++].inputBytes = res[1];
+        }
+        i = 0;
+        while ((res = TX.exec(out)) !== null) {
+          stats[i++].outputBytes = res[1];
+        }
+        return stats;
+      }),
+      inOut: function(interval) {
+        var self2 = this;
+        if (!interval) {
+          interval = bucket.options.INTERVAL;
+        }
+        return Promise.all([
+          self2.stats(),
+          function() {
+            return new Promise(function(resolve) {
+              setTimeout(function() {
+                self2.stats().then(resolve);
+              }, interval);
+            });
+          }()
+        ]).then(function(stats) {
+          var oldStats = stats[0];
+          var newStats = stats[1];
+          var metrics = {
+            total: {
+              inputMb: 0,
+              outputMb: 0
+            }
+          };
+          var nbProblems = 0;
+          for (var i = 0; i < oldStats.length; i++) {
+            if (oldStats[i].interface !== "lo" && oldStats[i].interface !== "lo0" && oldStats[i].inputBytes > 0 && oldStats[i].outputBytes > 0) {
+              metrics[oldStats[i].interface] = {};
+              metrics[oldStats[i].interface]["inputMb"] = parseFloat(((newStats[i].inputBytes - oldStats[i].inputBytes) / interval * 1e3 / 1e6).toFixed(2));
+              metrics[oldStats[i].interface]["outputMb"] = parseFloat(((newStats[i].outputBytes - oldStats[i].outputBytes) / interval * 1e3 / 1e6).toFixed(2));
+              metrics.total["inputMb"] += parseFloat(metrics[oldStats[i].interface]["inputMb"]);
+              metrics.total["outputMb"] += parseFloat(metrics[oldStats[i].interface]["outputMb"]);
+            } else {
+              nbProblems++;
+            }
+          }
+          if (nbProblems === oldStats.length) {
+            return Promise.resolve(bucket.options.NOT_SUPPORTED_VALUE);
+          }
+          return Promise.resolve(metrics);
+        });
+      }
+    };
+  }
+});
+
+// node_modules/node-os-utils/lib/openfiles.js
+var require_openfiles = __commonJS({
+  "node_modules/node-os-utils/lib/openfiles.js"() {
+    var bucket = require_bucket();
+    var fs = require("fs");
+    bucket.openfiles = {
+      openFd: function() {
+        return new Promise(function(resolve) {
+          fs.readFile("/proc/sys/fs/file-nr", function(err, out) {
+            if (err) {
+              return resolve(bucket.options.NOT_SUPPORTED_VALUE);
+            }
+            var result = out.toString().replace(/\n/g, "").split(" ")[0];
+            result = parseInt(result, 10);
+            return resolve(result);
+          });
+        });
+      }
+    };
+  }
+});
+
+// node_modules/node-os-utils/lib/osCmd.js
+var require_osCmd = __commonJS({
+  "node_modules/node-os-utils/lib/osCmd.js"() {
+    var bucket = require_bucket();
+    var exec = require_exec();
+    var wrapExec = exec.wrapExec;
+    bucket.osCmd = {
+      topCpu: wrapExec("ps -eo pcpu,user,args --no-headers | sort -k 1 -n | tail -n 10 | sort -k 1 -nr | cut -c 1-70"),
+      topMem: wrapExec("ps -eo pmem,pid,cmd | sort -k 1 -n | tail -n 10 | sort -k 1 -nr | cut -c 1-70"),
+      vmstats: wrapExec("vmstat -S m"),
+      processesUsers: wrapExec("ps hax -o user | sort | uniq -c"),
+      diskUsage: wrapExec("df -h"),
+      who: wrapExec("who"),
+      whoami: wrapExec("whoami"),
+      openPorts: wrapExec("lsof -Pni4 | grep ESTABLISHED"),
+      ifconfig: wrapExec("ifconfig")
+    };
+  }
+});
+
+// node_modules/node-os-utils/lib/os.js
+var require_os = __commonJS({
+  "node_modules/node-os-utils/lib/os.js"() {
+    var bucket = require_bucket();
+    var fs = require("fs");
+    var os = require("os");
+    var co = require_co();
+    var exec = require_exec();
+    var originalOperatingSystem = {
+      checkLastResort: co.wrap(function* () {
+        return exec("uname -sr");
+      }),
+      darwin: function() {
+        var self2 = this;
+        return co(function* () {
+          var res = yield exec("sw_vers");
+          if (bucket.isNotSupported(res))
+            return self2.checkLastResort();
+          var version = res.match(/[\n\r].*ProductVersion:\s*([^\n\r]*)/)[1];
+          var distribution = res.match(/.*ProductName:\s*([^\n\r]*)/)[1];
+          return distribution + " " + version;
+        });
+      },
+      linux: function() {
+        var self2 = this;
+        return new Promise(function(resolve) {
+          fs.readFile("/etc/issue", function(err, out) {
+            if (err) {
+              return self2.checkLastResort(resolve);
+            }
+            out = out.toString();
+            var version = out.match(/[\d]+(\.[\d][\d]?)?/);
+            if (version !== null) {
+              version = version[0];
+            }
+            var distribution = out.match(/[\w]*/)[0];
+            if (version !== null && distribution !== null) {
+              var resultOs = distribution + " " + version;
+              return resolve(resultOs);
+            } else if (distribution !== null && distribution !== "") {
+              return resolve(distribution);
+            } else if (version === null) {
+              fs.readFile("/etc/redhat-release", function(err2, out2) {
+                if (err2) {
+                  return self2.checkLastResort(resolve);
+                }
+                out2 = out2.toString();
+                version = out2.match(/[\d]+(\.[\d][\d]?)?/);
+                if (version !== null) {
+                  version = version[0];
+                }
+                var resultOs2 = "Red Hat " + version;
+                return resolve(resultOs2);
+              });
+            }
+          });
+        });
+      }
+    };
+    bucket.os = {
+      oos: function() {
+        var platform = os.platform();
+        if (platform === "linux") {
+          return originalOperatingSystem.linux();
+        }
+        if (platform === "darwin") {
+          return originalOperatingSystem.darwin();
+        }
+        return originalOperatingSystem.checkLastResort();
+      },
+      platform: function() {
+        return os.platform();
+      },
+      uptime: function() {
+        return os.uptime();
+      },
+      ip: function() {
+        var platform = os.platform();
+        var interfaces = os.networkInterfaces();
+        var ip = "";
+        var i = 0;
+        try {
+          if (platform === "linux" && interfaces.eth0) {
+            for (i = 0; i < interfaces.eth0.length; i++) {
+              if (os.networkInterfaces().eth0[i].family === "IPv4") {
+                ip = os.networkInterfaces().eth0[i].address;
+                break;
+              }
+            }
+            return ip;
+          }
+          if (platform === "darwin") {
+            for (i = 0; i < interfaces.en0.length; i++) {
+              if (os.networkInterfaces().en0[i].family === "IPv4") {
+                ip = os.networkInterfaces().en0[i].address;
+                break;
+              }
+            }
+            return ip;
+          }
+          for (i in interfaces) {
+            var item = interfaces[i];
+            for (var j in item) {
+              if (item[j]["internal"] === false && item[j]["family"] === "IPv4") {
+                ip = item[j]["address"];
+                break;
+              }
+            }
+          }
+        } catch (error) {
+          ip = "LOCALHOST";
+        }
+        return ip;
+      },
+      hostname: function() {
+        return os.hostname();
+      },
+      type: function() {
+        return os.type();
+      },
+      arch: function() {
+        return os.arch();
+      }
+    };
+  }
+});
+
+// node_modules/node-os-utils/lib/proc.js
+var require_proc = __commonJS({
+  "node_modules/node-os-utils/lib/proc.js"() {
+    var bucket = require_bucket();
+    var exec = require_exec();
+    var os = require("os");
+    var co = require_co();
+    bucket.proc = {
+      totalProcesses: co.wrap(function* () {
+        var res = yield exec("top -bn1 | awk 'NR > 7 && $8 ~ /R|S|D|T/ { print $12 }'");
+        if (bucket.isNotSupported(res)) {
+          if (os.platform() === "darwin") {
+            var nb = yield exec("ps -A");
+            nb = nb.toString().split("\n");
+            return nb.length - 1;
+          }
+          return res;
+        }
+        var resultProc = res.split("\n").length;
+        return resultProc;
+      }),
+      zombieProcesses: co.wrap(function* () {
+        var res = yield exec("top -bn1 | awk 'NR > 7 && $8 ~ /Z/ { print $12 }'");
+        if (bucket.isNotSupported(res))
+          return res;
+        return res.split("\n").length;
+      })
+    };
+  }
+});
+
+// node_modules/node-os-utils/lib/users.js
+var require_users = __commonJS({
+  "node_modules/node-os-utils/lib/users.js"() {
+    var bucket = require_bucket();
+    var exec = require_exec();
+    var co = require_co();
+    bucket.users = {
+      openedCount: co.wrap(function* () {
+        var res = yield exec("who | grep -v localhost | wc -l");
+        if (bucket.isNotSupported(res))
+          return res;
+        return parseInt(res, 10);
+      })
+    };
+  }
+});
+
+// node_modules/node-os-utils/index.js
+var require_node_os_utils = __commonJS({
+  "node_modules/node-os-utils/index.js"(exports2, module2) {
+    require_cpu();
+    require_drive();
+    require_mem();
+    require_netstat();
+    require_openfiles();
+    require_osCmd();
+    require_os();
+    require_proc();
+    require_users();
+    module2.exports = require_bucket();
+  }
+});
+
+// node_modules/@colyseus/monitor/build/api.js
+var require_api = __commonJS({
+  "node_modules/@colyseus/monitor/build/api.js"(exports2) {
+    "use strict";
+    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value2) {
+        return value2 instanceof P ? value2 : new P(function(resolve) {
+          resolve(value2);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject) {
+        function fulfilled(value2) {
+          try {
+            step(generator.next(value2));
+          } catch (e) {
+            reject(e);
+          }
+        }
+        function rejected(value2) {
+          try {
+            step(generator["throw"](value2));
+          } catch (e) {
+            reject(e);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    var __importDefault2 = exports2 && exports2.__importDefault || function(mod) {
+      return mod && mod.__esModule ? mod : { "default": mod };
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getAPI = void 0;
+    var colyseus_1 = require_build5();
+    var express_1 = __importDefault2(require_express2());
+    var node_os_utils_1 = __importDefault2(require_node_os_utils());
+    var UNAVAILABLE_ROOM_ERROR = "@colyseus/monitor: room $roomId is not available anymore.";
+    var DEFAULT_COLUMNS = [
+      "roomId",
+      "name",
+      "clients",
+      "maxClients",
+      "locked",
+      "elapsedTime"
+    ];
+    function getAPI(opts) {
+      const api = express_1.default.Router();
+      api.get("/", (req, res) => __awaiter(this, void 0, void 0, function* () {
+        try {
+          const rooms = yield colyseus_1.matchMaker.query({});
+          let connections = 0;
+          res.json({
+            columns: opts.columns || DEFAULT_COLUMNS,
+            rooms: rooms.map((room) => {
+              const data = room.toJSON();
+              connections += room.clients;
+              data.locked = room.locked || false;
+              data.private = room.private;
+              data.maxClients = `${room.maxClients}`;
+              data.elapsedTime = Date.now() - new Date(room.createdAt).getTime();
+              return data;
+            }),
+            connections,
+            cpu: yield node_os_utils_1.default.cpu.usage(),
+            memory: yield node_os_utils_1.default.mem.used()
+          });
+        } catch (e) {
+          const message2 = e.message;
+          console.error(message2);
+          res.status(500);
+          res.json({ message: message2 });
+        }
+      }));
+      api.get("/room", (req, res) => __awaiter(this, void 0, void 0, function* () {
+        const roomId = req.query.roomId;
+        try {
+          const inspectData = yield colyseus_1.matchMaker.remoteRoomCall(roomId, "getInspectData");
+          res.json(inspectData);
+        } catch (e) {
+          const message2 = UNAVAILABLE_ROOM_ERROR.replace("$roomId", roomId);
+          console.error(message2);
+          res.status(500);
+          res.json({ message: message2 });
+        }
+      }));
+      api.get("/room/call", (req, res) => __awaiter(this, void 0, void 0, function* () {
+        const roomId = req.query.roomId;
+        const method = req.query.method;
+        const args2 = JSON.parse(req.query.args);
+        try {
+          const data = yield colyseus_1.matchMaker.remoteRoomCall(roomId, method, args2);
+          res.json(data);
+        } catch (e) {
+          const message2 = UNAVAILABLE_ROOM_ERROR.replace("$roomId", roomId);
+          console.error(message2);
+          res.status(500);
+          res.json({ message: message2 });
+        }
+      }));
+      return api;
+    }
+    exports2.getAPI = getAPI;
+  }
+});
+
+// node_modules/@colyseus/monitor/build/ext/Room.js
+var require_Room2 = __commonJS({
+  "node_modules/@colyseus/monitor/build/ext/Room.js"(exports2) {
+    "use strict";
+    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value2) {
+        return value2 instanceof P ? value2 : new P(function(resolve) {
+          resolve(value2);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject) {
+        function fulfilled(value2) {
+          try {
+            step(generator.next(value2));
+          } catch (e) {
+            reject(e);
+          }
+        }
+        function rejected(value2) {
+          try {
+            step(generator["throw"](value2));
+          } catch (e) {
+            reject(e);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var colyseus_1 = require_build5();
+    function getStateSize(room) {
+      const hasState = room._serializer.state || room._serializer.previousState;
+      const fullState = hasState && room._serializer.getFullState();
+      return fullState && (fullState.byteLength || fullState.length) || 0;
+    }
+    colyseus_1.Room.prototype.getAvailableData = function() {
+      return {
+        clients: this.clients.length,
+        maxClients: this.maxClients,
+        metadata: this.metadata,
+        roomId: this.roomId
+      };
+    };
+    colyseus_1.Room.prototype.getRoomListData = function() {
+      return __awaiter(this, void 0, void 0, function* () {
+        const stateSize = getStateSize(this);
+        const elapsedTime = this.clock.elapsedTime;
+        const locked = this.locked;
+        const data = this.getAvailableData();
+        return Object.assign(Object.assign({}, data), { locked, elapsedTime, stateSize });
+      });
+    };
+    colyseus_1.Room.prototype.getInspectData = function() {
+      return __awaiter(this, void 0, void 0, function* () {
+        const state = this.state;
+        const stateSize = getStateSize(this);
+        const data = this.getAvailableData();
+        const clients = this.clients.map((client) => ({ sessionId: client.sessionId }));
+        const locked = this.locked;
+        return Object.assign(Object.assign({}, data), { locked, clients, state, stateSize });
+      });
+    };
+    colyseus_1.Room.prototype._forceClientDisconnect = function(sessionId) {
+      return __awaiter(this, void 0, void 0, function* () {
+        for (let i = 0; i < this.clients.length; i++) {
+          if (this.clients[i].sessionId === sessionId) {
+            this.clients[i].terminate();
+            break;
+          }
+        }
+      });
+    };
+    colyseus_1.Room.prototype._sendMessageToClient = function(sessionId, type, data) {
+      return __awaiter(this, void 0, void 0, function* () {
+        for (let i = 0; i < this.clients.length; i++) {
+          if (this.clients[i].sessionId === sessionId) {
+            this.clients[i].send(type, data);
+            break;
+          }
+        }
+      });
+    };
+  }
+});
+
+// node_modules/@colyseus/monitor/build/index.js
+var require_build6 = __commonJS({
+  "node_modules/@colyseus/monitor/build/index.js"(exports2) {
+    "use strict";
+    var __importDefault2 = exports2 && exports2.__importDefault || function(mod) {
+      return mod && mod.__esModule ? mod : { "default": mod };
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.monitor = void 0;
+    var express_1 = __importDefault2(require_express2());
+    var path_1 = __importDefault2(require("path"));
+    var api_1 = require_api();
+    require_Room2();
+    var frontendDirectory = path_1.default.resolve(__dirname, "..", "build", "static");
+    function monitor2(opts = {}) {
+      const router = express_1.default.Router();
+      router.use(express_1.default.static(frontendDirectory));
+      router.use("/api", api_1.getAPI(opts));
+      return router;
+    }
+    exports2.monitor = monitor2;
+  }
+});
+
 // server/src/index.ts
-var import_http = __toModule(require("http"));
 var import_express = __toModule(require_express2());
+var import_http = __toModule(require("http"));
 var import_core = __toModule(require_build());
 var import_ws_transport = __toModule(require_build2());
-var import_colyseus = __toModule(require_build5());
+var import_monitor = __toModule(require_build6());
 var app = (0, import_express.default)();
 var server = (0, import_http.createServer)(app);
-var port = Number(process.env.port) || 2567;
 var gameServer = new import_core.Server({
   transport: new import_ws_transport.WebSocketTransport({
     server
   })
 });
+app.use("/colyseus", (0, import_monitor.monitor)());
+var port = Number(process.env.port) || 2567;
 gameServer.listen(port);
-var MyRoom = class extends import_colyseus.Room {
-  onCreate(options) {
-  }
-  onAuth(client, options, request) {
-    return {
-      name: "liurongqing",
-      age: 30
-    };
-  }
-  onJoin(client, options, auth) {
-  }
-  onLeave(client, consented) {
-  }
-  onDispose(...rest) {
-  }
-};
-gameServer.define("room1", MyRoom, {});
 /*!
  * 1) Apply backwards compatible find/findOne behavior to sub documents
  *

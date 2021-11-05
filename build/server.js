@@ -5,12 +5,14 @@ require('esbuild')
     bundle: true,
     // format: 'cjs',
     platform: 'node',
+    tsconfig: 'tsconfig.server.json',
     external: [
       'internal-ip',
-      'mongodb-client-encryption',
-      'http',
+      // 'mongodb-client-encryption',
+      // 'http',
+      // 'redis-phaser'
       'hiredis',
-      'fsevents',
+      // 'fsevents',
     ],
     watch: {
       onRebuild(error, result) {

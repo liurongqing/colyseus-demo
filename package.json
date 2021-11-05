@@ -24,6 +24,7 @@
     "nodemon": "^2.0.14"
   },
   "dependencies": {
+    "@colyseus/monitor": "^0.14.22",
     "colyseus": "^0.14.23",
     "colyseus.js": "^0.14.13",
     "express": "^4.17.1"
