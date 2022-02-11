@@ -23,8 +23,6 @@
     "clean-webpack-plugin": "^4.0.0",
     "colyseus": "^0.14.23",
     "copy-webpack-plugin": "^10.2.4",
-    "express": "^4.17.2",
-    "http": "0.0.1-security",
     "ts-loader": "^9.2.6",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.5.5",
@@ -33,8 +31,11 @@
     "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
+    "@colyseus/command": "^0.2.1",
     "@colyseus/monitor": "^0.14.22",
     "colyseus.js": "^0.14.13",
+    "express": "^4.17.2",
+    "http": "0.0.1-security",
     "phaser": "^3.55.2"
   }
 }

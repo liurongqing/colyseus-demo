@@ -4,6 +4,7 @@ const getIPAddress = require('./getIPAddress')
 const generatePort = require('./generatePort')
 
 const host = getIPAddress()
+// console.log('host', host)
 const port = generatePort(packageInfo.name)
 module.exports = {
   mode: 'development',
