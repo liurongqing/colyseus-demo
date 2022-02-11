@@ -1,11 +1,10 @@
 const path = require('path')
-const packageInfo = require('./package.json')
+const packageInfo = require('../package.json')
 const getIPAddress = require('./getIPAddress')
 const generatePort = require('./generatePort')
 
 const host = getIPAddress()
 const port = generatePort(packageInfo.name)
-
 module.exports = {
   mode: 'development',
   entry: {
@@ -18,8 +17,8 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
     alias: {
-      '@': path.resolve(__dirname, './src'),
-    }
+      '@': path.resolve(__dirname, '../src'),
+    },
   },
   module: {
     rules: [

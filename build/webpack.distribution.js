@@ -9,12 +9,12 @@ module.exports = {
   },
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, '../dist'),
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, '../src'),
     },
   },
   module: {
@@ -36,10 +36,10 @@ module.exports = {
           from: 'index.html',
           context: 'src/',
         },
-        {
-          from: 'assets/*',
-          context: 'src/',
-        },
+        // {
+        //   from: 'assets/*',
+        //   context: 'src/',
+        // },
       ],
     }),
   ],
